@@ -1,0 +1,10 @@
+A simple apache access_log parser I put together to practice python and collect data to make pretty graphs with.
+
+It assumes the standard "Combined" log format with Time to Service (%D in the log format) tacked on the end as the last field.
+
+Usage:
+
+The script assumes you are on *nix with python(<3.0) in the path.
+parse.py and log_object.py should be in the same directory
+
+./parse.py /path/to/access-log
