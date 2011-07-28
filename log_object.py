@@ -11,10 +11,10 @@ class Log_object:
     request_query = "-"
     http_method = "-"
     http_version = "-"
-    http_code = "-"
+    http_code = 0
     referrer = "-"
-    response_size = "-"
-    time_to_service = "-"
+    response_size = 0.0
+    time_to_service = 0.0
     ip_address = "-"    
     
     def __init__(self, log_line):
@@ -35,15 +35,20 @@ class Log_object:
         request = re.search('- - \[(.*)\] "', log_line)
         if request.group(0):
             self.log_date = request.group(1)      
-        
+     
+    # User agent and time to serve request    
     def __parse_ua_and_tts(self, log_line):
-        request = re.search('"\s"(.*)"\s(\d{0,10})$', log_line)
+        request = re.search('"\s"(.*)"\s(\d*)$', log_line)
         if request.group(0):
             self.user_agent = request.group(1)      
 
         if request.group(1):
-            self.time_to_service = request.group(2)      
-        
+            try:
+                self.time_to_service = float(request.group(2))/1000            
+            except ValueError:
+                self.time_to_service = "-"
+                  
+    # The url that was requested as well as the parameters passed in    
     def __parse_request(self, log_line):
         request = re.search('"(GET|POST|HEAD|PUT|DELETE) (.*)\??.* (HTTP/1.\d)"', log_line)
         if request.group(0):
@@ -56,15 +61,23 @@ class Log_object:
             
         if request.group(2):
             self.http_version = request.group(3)      
-        
+     
+    # HTTP Code return as well as the size of the request    
     def __parse_http_code_size(self, log_line):
         request = re.search('HTTP/1.\d" (\d{3}|-) (\d*|-) "', log_line)
         
         if request.group(0):
-            self.http_code = request.group(1)      
+            try:
+                self.http_code = int(request.group(1))            
+            except ValueError:
+                self.http_code = "-"
+     
         
         if request.group(1):
-            self.response_size = request.group(2)       
+            try:
+                self.response_size = float(request.group(2))       
+            except ValueError:
+                self.response_size = "-"
      
     def __parse_referrer(self, log_line):
         request = re.search('\d{3} \d*|- "(.*)" "', log_line)
