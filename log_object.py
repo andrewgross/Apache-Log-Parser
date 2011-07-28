@@ -2,19 +2,20 @@
 import re
 
 class Log_object:
+    
+    # Initialize Fields
+    log_date = "-"
+    user_agent = "-"
+    request_url = "-"
+    http_method = "-"
+    http_version = "-"
+    http_code = "-"
+    referrer = "-"
+    response_size = "-"
+    time_to_service = "-"
+    ip_address = "-"    
+    
     def __init__(self, log_line):
-        # Initialize Fields
-        self.log_line = log_line
-        self.log_date = "-"
-        self.user_agent = "-"
-        self.request_url = "-"
-        self.http_method = "-"
-        self.http_version = "-"
-        self.http_code = "-"
-        self.referrer = "-"
-        self.response_size = "-"
-        self.time_to_service = "-"
-        self.ip_address = "-"
         # Contruct Data
         self.__parse_ip_address(log_line)
         self.__parse_date(log_line)
@@ -56,7 +57,7 @@ class Log_object:
         request = re.search('HTTP/1.\d" (\d{3}|-) (\d*|-) "', log_line)
         
         if request.group(0):
-            self.response_size = request.group(1)      
+            self.http_code = request.group(1)      
         
         if request.group(1):
             self.response_size = request.group(2)       
