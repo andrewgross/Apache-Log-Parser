@@ -1,12 +1,14 @@
-#!/usr/bin/python
 import re
+from urlparse import urlparse
 
 class Log_object:
     
     # Initialize Fields
     log_date = "-"
     user_agent = "-"
+    request_raw = "-"
     request_url = "-"
+    request_query = "-"
     http_method = "-"
     http_version = "-"
     http_code = "-"
@@ -48,7 +50,9 @@ class Log_object:
             self.http_method = request.group(1)      
             
         if request.group(1):
-            self.request_url = request.group(2)      
+            self.request_raw = request.group(2)
+            self.request_url = urlparse(self.request_raw).path
+            self.request_query = urlparse(self.request_raw).query
             
         if request.group(2):
             self.http_version = request.group(3)      
