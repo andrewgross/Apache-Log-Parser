@@ -30,7 +30,16 @@ for value in aggregate_log_objects_list.values():
     print "URL: %s" % value.request_url
     print "Mean: %.4f" % value.get_average_tts()
     print "STD:  %.4f" % value.get_std_dev_tts()
-    print "Requests: %d" % len(value.aggregate_tts)
+    count = 0
+    last_tts = 0.0    
+    for tts in value.sort_aggregate_tts:
+        if tts > last_tts:
+            print "%s: %s" % (last_tts .*count)            
+            count = 1
+        else:
+            count = count + 1
+
+        
     
     for tts in value.aggregate_tts:
         print tts
