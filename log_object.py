@@ -30,6 +30,8 @@ class Log_object:
         self.ip_address = re.findall('^(?:[0-9]{1,3}\.){3}[0-9]{1,3}', log_line) 
         if not self.ip_address:
             self.ip_address = "-"
+        else: 
+            self.ip_address = self.ip_address[0].strip('[]')
 
     def __parse_date(self, log_line):
         request = re.search('- - \[(.*)\] "', log_line)
@@ -80,7 +82,7 @@ class Log_object:
                 self.response_size = "-"
      
     def __parse_referrer(self, log_line):
-        request = re.search('\d{3} \d*|- "(.*)" "', log_line)
+        request = re.search('\d{3} .* "(.*)" "', log_line)
         if request.group(0):
             self.referrer = request.group(1)        
 

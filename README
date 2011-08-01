@@ -7,4 +7,4 @@ Usage:
 The script assumes you are on *nix with python(<3.0) in the path.
 parse.py and log_object.py should be in the same directory
 
-./parse.py /path/to/access-log
+python /path/to/parse.py /path/to/access-log
