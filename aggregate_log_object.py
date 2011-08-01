@@ -28,7 +28,14 @@ class Aggregate_log_object:
         return calculate_std_dev_time_to_service(self)
         
     def sort_aggregate_tts(self):
-        return sorted(self)
+        aggregate_tss.sort()
+        
+    def get_sorted_aggregate_tts(self):
+        return sorted(aggregate_tts)
+        
+    def calculate_average_tts(self):
+        self.average_tts = calculate_mean_time_to_service(self)
+
 
 
 

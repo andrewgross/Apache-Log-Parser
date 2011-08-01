@@ -2,13 +2,15 @@
 from sys import argv
 from aggregate_log_object import Aggregate_log_object
 from log_object import Log_object
+from operator import itemgetter, attrgetter
 
-script, input_file = argv
+script, input_file, output_file = argv
 
 f=open(input_file)
 
 log_objects=[]
 aggregate_log_objects_list={}
+sorted_tts = []
 
 # Parse the input file, create an object for each line with the field values
 for line in f:
@@ -23,24 +25,22 @@ for log_item in log_objects:
     else:
         aggregate_log_objects_list[log_item.request_url].add_log_object(log_item)
 
-for aggregate_log_object in aggregate_log_objects_list.values():
-    print aggregate_log_object.get_average_tts()
-    for similar_log_object in aggregate_log_object.get_similar_log_objects():
-        print similar_log_object.http_code
-        print similar_log_object.log_date
-        print similar_log_object.user_agent
-        print similar_log_object.request_raw
-        print similar_log_object.request_url
-        print similar_log_object.request_query
-        print similar_log_object.http_method
-        print similar_log_object.http_version
-        print similar_log_object.http_code
-        print similar_log_object.referrer
-        print similar_log_object.response_size
-        print similar_log_object.time_to_service
-        print similar_log_object.ip_address
-    
+o=open(output_file, 'w')
+o.writelines('%s\n' % 'Categories')
 
+for aggregate_log_object in aggregate_log_objects_list.values():
+    aggregate_log_object.calculate_average_tts()
+    
+s = sorted(aggregate_log_objects_list.values(), key=attrgetter('average_tts'), reverse=True)
+ 
+for aggregate_log_object in s: 
+    if "resources" not in aggregate_log_object.request_url:
+        if "operations" not in aggregate_log_object.request_url:
+            if ".pdf" not in aggregate_log_object.request_url:
+                if aggregate_log_object.average_tts >= 1500:  
+                    o.writelines('%s,%s\n' % (aggregate_log_object.request_url, str(aggregate_log_object.get_average_tts()/1000)))
+
+o.close()
 
 
 
