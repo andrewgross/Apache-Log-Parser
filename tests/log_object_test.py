@@ -19,8 +19,7 @@ class Log_object_test(unittest.TestCase):
                         ('time_to_service', float(379994.0)/1000),
                         ('ip_address',  '192.186.11.123') )
                     
-    def test_known_values(self):
-     
+    def test_known_values(self):     
         log_item = Log_object(self.raw_data)
         for parameter, parsed_result in self.known_values:
             self.assertEqual(getattr(log_item, parameter), parsed_result)
