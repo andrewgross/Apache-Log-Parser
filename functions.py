@@ -8,6 +8,15 @@ def parse_nginx(line):
         for k, v in r.groupdict().iteritems():
             if v is None or v is "-":
                 continue
+            if "request" in k:
+                if "?" in v:
+                    request = v.partition("?")
+                    path = request[0]
+                    query = request[2]
+                    result_set["path"] = path 
+                    result_set["query"] = query
+                    r.groupdict().pop(k)
+                    continue
             result_set[k] = r.groupdict().pop(k)
     return result_set   
 
