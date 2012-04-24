@@ -8,30 +8,33 @@ from outputs import statsd_timer
 
 locations = get_locations()
 
-# LOG_FILE = '/tmp/tmplog'
-# print LOG_FILE
-# print "init"
-# log_file = open(LOG_FILE, 'a') # Placeholder so that we can reload this at will
-
 def SigUSR1Handler(signum, frame):
     global log_file
+    is_running = False
     log_file.close()
     sys.exit(1)
     return
 
-def set_pid():
+def set_pid_file():
     f = open('/tmp/log_parser.pid', 'w')
     f.write(str(os.getpid()))
     f.flush()
     f.close()
-    signal.signal(signal.SIGUSR1, SigUSR1Handler)
+    signal.signal(signal.SIGUSR1, SigUSR1Handler) # Set up a handler for SigUSR1
 
 
 def main(input_file):
     global log_file
-    set_pid() # Set our pid so that we can rotate properly
-    
-    log_file = open(input_file)  
+    global is_running
+    is_running = True
+    set_pid_file() # Set our pid so that we can rotate properly
+    try:
+        log_file = open(input_file)
+    except IOError:
+        print "Unable to open log file"
+        time.sleep(1)
+        sys.exit(1)
+
     parsed_log = follow(log_file)
 
     for line in parsed_log:
@@ -41,7 +44,7 @@ def main(input_file):
 
 def follow(log_file):
     log_file.seek(0,2) # Go to the end of the file
-    while True:
+    while is_running:
         line = log_file.readline()
         if not line:
             time.sleep(0.1) # Sleep
@@ -49,6 +52,9 @@ def follow(log_file):
         yield parse_nginx(line)
 
 def process(line):
+    # Plugins
+    # Have some way to do trickle through or at least be aware if anything 
+    # process matches
     if line.get('path'):
         process_api(line)
         process_ajax(line)
